@@ -15,3 +15,5 @@ export const STATUS_CODES={
     unprocessable_entity:422,
     internal_server_error:500
 }
+
+export const CATEGORIES = ['Salary','Food', 'Transport', 'Entertainment', 'Utilities', 'Health','Shopping','Education','Investment','Rent','Loan','Transfer','Other']
