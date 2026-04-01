@@ -1,13 +1,13 @@
-export const errResponseBody = {
-  err: {},
-  data: {},
-  message: " Something went wrong , cannot process the request",
+export const errResponseBody = (message = "Something went wrong, cannot process the request", err = {}) => ({
   success: false,
-};
-
-export const successResponseBody = {
-  success: true,
-  err: {},
+  message,
+  err,
   data: {},
-  message: "Successfully processed the request",
-};
+});
+
+export const successResponseBody = (message = "Successfully processed the request", data = {}) => ({
+  success: true,
+  message,
+  data,
+  err: {},
+});
