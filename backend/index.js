@@ -4,6 +4,8 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import connectDB from './src/config/db.js';
 import authRoutes from './src/routes/auth.route.js';
+import transactionRoutes from './src/routes/transaction.route.js';
+
 
 dotenv.config();
 
@@ -35,6 +37,8 @@ app.use(session({
 
 // Routes
 app.use("/fms/api/v1", authRoutes);
+app.use("/fms/api/v1", transactionRoutes);
+
 
 const port = process.env.PORT || 3000;
 app.listen(port, async () => {

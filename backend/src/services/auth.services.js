@@ -7,7 +7,7 @@ export const createUser = async (userData) => {
     if (!userData.email || !userData.password || !userData.name || !userData.dateOfBirth) {
       throw { err: "All fields are required", code: STATUS_CODES.bad_request };
     }
-    const existingUser = await findUserByEmail(userData.email);
+    const existingUser = await User.findOne({email:userData.email});
     if (existingUser) {
       throw { err: "User with this email already exists", code: STATUS_CODES.conflict };
     }
@@ -26,7 +26,7 @@ export const createUser = async (userData) => {
 };
 
 export const loginUser = async (email, password) => {
-  const user = await findUserByEmail(email);
+  const user = await User.findOne({email})
   if (!user) {
     throw { err: "Invalid credentials", code: STATUS_CODES.unauthorized };
   }
