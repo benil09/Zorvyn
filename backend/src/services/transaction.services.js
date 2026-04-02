@@ -151,3 +151,52 @@ export const getDashboardSummaryService = async (userId) => {
   summary.netBalance = summary.totalIncome - summary.totalExpense;
   return summary;
 };
+
+// ------------------ DASHBOARD: BY CATEGORY --------------------------
+export const getCategoryBreakdownService = async (userId) => {
+  return Transaction.aggregate([
+    { $match: { userId: new mongoose.Types.ObjectId(userId), isDeleted: false } },
+    {
+      $group: {
+        _id: { category: "$category", type: "$type" },
+        total: { $sum: "$amount" },
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $group: {
+        _id: "$_id.category",
+        breakdown: {
+          $push: { type: "$_id.type", total: "$total", count: "$count" },
+        },
+        categoryTotal: { $sum: "$total" },
+      },
+    },
+    { $sort: { categoryTotal: -1 } },
+  ]);
+};
+
+export const getMonthlyTrendsService = async (userId) => {
+  return Transaction.aggregate([
+    { $match: { userId: new mongoose.Types.ObjectId(userId), isDeleted: false } },
+    {
+      $group: {
+        _id: {
+          year: { $year: "$date" },
+          month: { $month: "$date" },
+          type: "$type",
+        },
+        total: { $sum: "$amount" },
+        count: { $sum: 1 },
+      },
+    },
+    { $sort: { "_id.year": -1, "_id.month": -1 } },
+  ]);
+};
+
+// ------------------ RESCENT TRANSACTIONS --------------------------
+export const getRecentTransactionsService = async (userId, limit = 5) => {
+  return Transaction.find({ userId })
+    .sort({ date: -1 })
+    .limit(Number(limit));
+};
