@@ -1,7 +1,8 @@
 
-import { createTransactionService } from "../services/transaction.services.js";
+import { createTransactionService, getAllTransactionsService } from "../services/transaction.services.js";
 import { STATUS_CODES } from "../lib/constants.js";
 import { errResponseBody, successResponseBody } from "../lib/responseBody.js";
+
 
 export const createTransaction =async (req,res)=>{
     try {
@@ -20,3 +21,15 @@ export const createTransaction =async (req,res)=>{
     }
 
 }
+
+export const getTransactions = async (req, res) => {
+  try {
+    const result = await getAllTransactionsService(req.user._id, req.query);
+    return res
+      .status(STATUS_CODES.ok)
+      .json(successResponseBody("Transactions fetched successfully", result));
+  } catch (error) {
+    console.error(error);
+    return res.status(STATUS_CODES.internal_server_error).json(errResponseBody());
+  }
+};

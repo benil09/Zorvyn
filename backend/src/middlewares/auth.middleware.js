@@ -74,7 +74,7 @@ export const requireRole = (...roles) => (req, res, next) => {
       .status(STATUS_CODES.forbidden)
       .json(
         errResponseBody(
-          `Access denied. Required role: ${roles.join(" or ")}. Your role: ${req.user.role}`
+          `Access denied. You are not an Admin. Your role is ${req.user.role}`
         )
       );
   }
