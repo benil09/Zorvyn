@@ -1,5 +1,5 @@
 
-import { createTransactionService, getAllTransactionsService,getTransactionByIdService } from "../services/transaction.services.js";
+import { createTransactionService, getAllTransactionsService,getTransactionByIdService,updateTransactionService } from "../services/transaction.services.js";
 import { STATUS_CODES } from "../lib/constants.js";
 import { errResponseBody, successResponseBody } from "../lib/responseBody.js";
 
@@ -41,6 +41,24 @@ export const getTransactionById = async (req, res) => {
     return res
       .status(STATUS_CODES.ok)
       .json(successResponseBody("Transaction fetched successfully", { transaction }));
+  } catch (error) {
+    console.error(error);
+    if (error.err) {
+      return res
+        .status(error.code || STATUS_CODES.internal_server_error)
+        .json(errResponseBody("Request failed", error.err));
+    }
+    return res.status(STATUS_CODES.internal_server_error).json(errResponseBody());
+  }
+};
+
+
+export const updateTransaction = async (req, res) => {
+  try {
+    const transaction = await updateTransactionService(req.params.id, req.user._id, req.body);
+    return res
+      .status(STATUS_CODES.ok)
+      .json(successResponseBody("Transaction updated successfully", { transaction }));
   } catch (error) {
     console.error(error);
     if (error.err) {

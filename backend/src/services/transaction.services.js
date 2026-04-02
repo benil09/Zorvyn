@@ -92,3 +92,21 @@ export const getTransactionByIdService = async (transactionId, userId) => {
   }
   return transaction;
 };
+
+// --------------------- UPDATE TRANSACTION --------------------
+export const updateTransactionService = async (transactionId, userId, updates) => {
+  // Disallow updating sensitive/system fields
+  const BLOCKED_FIELDS = ["userId", "isDeleted", "deletedBy", "createdAt", "updatedAt"];
+  BLOCKED_FIELDS.forEach((field) => delete updates[field]);
+
+  const transaction = await Transaction.findOneAndUpdate(
+    { _id: transactionId, userId },
+    { $set: updates },
+    { returnDocument:'after', runValidators: true }
+  );
+
+  if (!transaction) {
+    throw { err: "Transaction not found", code: STATUS_CODES.not_found };
+  }
+  return transaction.populate("userId",{name:1});
+};
