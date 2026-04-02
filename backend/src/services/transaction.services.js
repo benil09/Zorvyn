@@ -122,3 +122,32 @@ export const deleteTransactionService = async (transactionId, userId, deletedByU
   await transaction.softDelete(deletedByUserId);
   return transaction;
 };
+
+
+// -------------------- DASHBOARD: SUMMARY -------------------------
+
+export const getDashboardSummaryService = async (userId) => {
+  const result = await Transaction.aggregate([
+    { $match: { userId: new mongoose.Types.ObjectId(userId), isDeleted: false } },
+    {
+      $group: {
+        _id: "$type",
+        total: { $sum: "$amount" },
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const summary = { totalIncome: 0, totalExpense: 0, incomeCount: 0, expenseCount: 0 };
+  result.forEach(({ _id, total, count }) => {
+    if (_id === "income") {
+      summary.totalIncome = total;
+      summary.incomeCount = count;
+    } else if (_id === "expense") {
+      summary.totalExpense = total;
+      summary.expenseCount = count;
+    }
+  });
+  summary.netBalance = summary.totalIncome - summary.totalExpense;
+  return summary;
+};
