@@ -35,49 +35,60 @@ export const createTransactionService = async (trxnData , userId)=>{
 // --------------------- GET ALL TRANSACTIONS --------------------
 
 export const getAllTransactionsService = async (userId, query)=>{
-       const {
-             type,
-             category,
-             currency,
-             startDate,
-             endDate,
-             page = 1,
-             limit = 10,
-             sortBy = "date",
-             order = "desc",
-             } = query;
-
-        const filter = { userId }
-       
-        if (type) filter.type = type;
-        if (category) filter.category = category;
-        if (currency) filter.currency = currency;
-
-        if (startDate || endDate) {
-         filter.date = {};
-         if (startDate) filter.date.$gte = new Date(startDate);
-         if (endDate) filter.date.$lte = new Date(endDate);
-       }
-
-       const sortOrder = order === "asc" ? 1 : -1;
-       const skip = (Number(page) - 1) * Number(limit);
-
-       const [transactions, total] = await Promise.all([
-       Transaction.find(filter)
-         .sort({ [sortBy]: sortOrder })
-         .skip(skip)
-         .limit(Number(limit)),
-       Transaction.countDocuments(filter),
+  const {
+    type,
+    category,
+    currency,
+    startDate,
+    endDate,
+    page = 1,
+    limit = 10,
+    sortBy = "date",
+    order = "desc",
+  } = query;
+  
+  const filter = { userId }
+  
+  if (type) filter.type = type;
+  if (category) filter.category = category;
+  if (currency) filter.currency = currency;
+  
+  if (startDate || endDate) {
+    filter.date = {};
+    if (startDate) filter.date.$gte = new Date(startDate);
+    if (endDate) filter.date.$lte = new Date(endDate);
+  }
+  
+  const sortOrder = order === "asc" ? 1 : -1;
+  const skip = (Number(page) - 1) * Number(limit);
+  
+  const [transactions, total] = await Promise.all([
+    Transaction.find(filter)
+    .sort({ [sortBy]: sortOrder })
+    .skip(skip)
+    .limit(Number(limit)),
+    Transaction.countDocuments(filter),
   ]);
-
-     return {
-         transactions,
-         pagination: {
+  
+  return {
+    transactions,
+    pagination: {
       total,
       page: Number(page),
       limit: Number(limit),
       totalPages: Math.ceil(total / Number(limit)),
     },
   };
-
+  
 }
+
+
+// --------------------- GET  TRANSACTION BY ID --------------------
+
+export const getTransactionByIdService = async (transactionId, userId) => {
+  const transaction = await Transaction.findOne({ _id: transactionId, userId });
+  if (!transaction) {
+    throw { err: "Transaction not found", code: STATUS_CODES.not_found };
+  }
+  return transaction;
+};
