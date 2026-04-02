@@ -1,6 +1,6 @@
 import express from 'express'
 import {protectRoute,requireAdmin} from "../middlewares/auth.middleware.js"
-import { createTransaction ,getAllTransactions,getTransactionById,updateTransaction } from '../controller/transaction.controller.js';
+import { createTransaction ,getAllTransactions,getTransactionById,updateTransaction,deleteTransaction } from '../controller/transaction.controller.js';
 
 
 const router = express.Router();
@@ -10,6 +10,7 @@ router.post("/transactions", protectRoute , requireAdmin, createTransaction);
 router.get("/transactions", protectRoute, getAllTransactions);
 router.get("/transactions/:id", protectRoute, getTransactionById);
 router.patch("/transactions/:id", protectRoute, requireAdmin, updateTransaction);
+router.delete("/transactions/:id", protectRoute, requireAdmin, deleteTransaction);
 
 
 

@@ -110,3 +110,15 @@ export const updateTransactionService = async (transactionId, userId, updates) =
   }
   return transaction.populate("userId",{name:1});
 };
+
+
+// -------------------- SOFT DELETE -------------------------
+
+export const deleteTransactionService = async (transactionId, userId, deletedByUserId) => {
+  const transaction = await Transaction.findOne({ _id: transactionId, userId });
+  if (!transaction) {
+    throw { err: "Transaction not found", code: STATUS_CODES.not_found };
+  }
+  await transaction.softDelete(deletedByUserId);
+  return transaction;
+};

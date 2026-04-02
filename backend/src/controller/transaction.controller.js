@@ -1,5 +1,5 @@
 
-import { createTransactionService, getAllTransactionsService,getTransactionByIdService,updateTransactionService } from "../services/transaction.services.js";
+import { createTransactionService, getAllTransactionsService,getTransactionByIdService,updateTransactionService,deleteTransactionService } from "../services/transaction.services.js";
 import { STATUS_CODES } from "../lib/constants.js";
 import { errResponseBody, successResponseBody } from "../lib/responseBody.js";
 
@@ -59,6 +59,24 @@ export const updateTransaction = async (req, res) => {
     return res
       .status(STATUS_CODES.ok)
       .json(successResponseBody("Transaction updated successfully", { transaction }));
+  } catch (error) {
+    console.error(error);
+    if (error.err) {
+      return res
+        .status(error.code || STATUS_CODES.internal_server_error)
+        .json(errResponseBody("Request failed", error.err));
+    }
+    return res.status(STATUS_CODES.internal_server_error).json(errResponseBody());
+  }
+};
+
+
+export const deleteTransaction = async (req, res) => {
+  try {
+    await deleteTransactionService(req.params.id, req.user._id, req.user._id);
+    return res
+      .status(STATUS_CODES.ok)
+      .json(successResponseBody("Transaction deleted successfully"));
   } catch (error) {
     console.error(error);
     if (error.err) {
